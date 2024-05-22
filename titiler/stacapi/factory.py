@@ -209,7 +209,7 @@ class MosaicTilerFactory(BaseTilerFactory):
         ):
             """Create map tile."""
             scale = scale or 1
-
+         
             tms = self.supported_tms.get(tileMatrixSetId)
             with rasterio.Env(**env):
                 with self.reader(

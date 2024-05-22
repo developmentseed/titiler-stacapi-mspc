@@ -32,6 +32,8 @@ Install from sources and run for development:
 ```
 $ git clone https://github.com/developmentseed/titiler-stacapi.git
 $ cd titiler-stacapi
+$ virtualenv -p python3 venv
+$ source venv/bin/activate
 $ python -m pip install -e .
 ```
 

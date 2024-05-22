@@ -39,7 +39,7 @@ class CacheSettings(BaseSettings):
     maxsize: int = 512
 
     # Whether or not caching is enabled
-    disable: bool = False
+    disable: bool = True
 
     model_config = {
         "env_prefix": "TITILER_STACAPI_CACHE_",

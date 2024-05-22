@@ -6,7 +6,7 @@ see: https://github.com/developmentseed/ogcapi-pydantic
 
 """
 
-from typing import Dict, List, Optional, TypedDict, Union
+from typing import Dict, List, Optional, Sequence, Tuple, TypedDict, Union
 
 from geojson_pydantic import Feature, Point
 from pydantic import BaseModel, Field
@@ -113,3 +113,12 @@ class LayerDict(TypedDict, total=False):
     tilematrixsets: Dict
     time: Optional[List[str]]
     query_string: str
+
+class AssetInfo(TypedDict, total=False):
+    """Asset Reader Options."""
+
+    url: str
+    type: str
+    env: Optional[Dict]
+    metadata: Optional[Dict]
+    dataset_statistics: Optional[Sequence[Tuple[float, float]]]

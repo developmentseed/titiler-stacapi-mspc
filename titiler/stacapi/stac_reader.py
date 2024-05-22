@@ -10,14 +10,30 @@ import planetary_computer
 from rasterio.crs import CRS
 from rio_tiler.constants import WEB_MERCATOR_TMS, WGS84_CRS
 from rio_tiler.errors import InvalidAssetName
-from rio_tiler.io import BaseReader, Reader, stac
-from rio_tiler.types import AssetInfo
+from rio_tiler.io import BaseReader, Reader, XarrayReader, stac
 
+# Also replace with rio_tiler import when https://github.com/cogeotiff/rio-tiler/pull/711 is merged and released.
+from titiler.stacapi.models import AssetInfo
 from titiler.stacapi.settings import STACSettings
 from titiler.stacapi.settings import STACAPISettings
 
 stac_config = STACSettings()
 stac_api_config = STACAPISettings()
+
+valid_types = {
+    "image/tiff; application=geotiff",
+    "image/tiff; application=geotiff; profile=cloud-optimized",
+    "image/tiff; profile=cloud-optimized; application=geotiff",
+    "image/tiff; application=geotiff; profile=cloud-optimized",
+    "image/vnd.stac.geotiff; cloud-optimized=true",
+    "image/tiff",
+    "image/x.geotiff",
+    "image/jp2",
+    "application/x-hdf5",
+    "application/x-hdf",
+    "application/vnd+zarr",
+    "application/x-netcdf",
+}
 
 @attr.s
 class STACReader(stac.STACReader):
@@ -49,6 +65,23 @@ class STACReader(stac.STACReader):
     ctx: Any = attr.ib(default=rasterio.Env)
 
     item: pystac.Item = attr.ib(init=False)
+
+    include_asset_types: Set[str] = attr.ib(default=valid_types)
+
+    def _get_reader(self, asset_info: AssetInfo) -> Type[BaseReader]:
+        """Get Asset Reader."""
+        asset_type = asset_info.get("type", None)
+
+        if asset_type and asset_type in [
+            "application/x-hdf5",
+            "application/x-hdf",
+            "application/vnd.zarr",
+            "application/x-netcdf",
+
+        ]:
+            return XarrayReader
+
+        return Reader
 
     def __attrs_post_init__(self):
         """Fetch STAC Item and get list of valid assets."""
@@ -98,6 +131,9 @@ class STACReader(stac.STACReader):
             url=url,
             metadata=extras,
         )
+        
+        # Replace this and the _get_reader method once https://github.com/cogeotiff/rio-tiler/pull/711 is merged and released.
+        self.reader = self._get_reader(info)        
 
         if head := extras.get("file:header_size"):
             info["env"] = {"GDAL_INGESTED_BYTES_AT_OPEN": head}
