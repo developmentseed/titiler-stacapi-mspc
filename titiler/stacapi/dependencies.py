@@ -7,6 +7,7 @@ import pystac
 from cachetools import TTLCache, cached
 from cachetools.keys import hashkey
 from fastapi import Depends, HTTPException, Path, Query
+import planetary_computer as pc
 from pystac_client import ItemSearch
 from pystac_client.stac_api_io import StacApiIO
 from starlette.requests import Request
@@ -123,7 +124,11 @@ def get_stac_item(
         headers=headers,
     )
     results = ItemSearch(
-        f"{url}/search", stac_io=stac_api_io, collections=[collection_id], ids=[item_id]
+        f"{url}/search",
+        stac_io=stac_api_io,
+        collections=[collection_id],
+        ids=[item_id],
+        modifier=pc.sign_inplace,
     )
     items = list(results.items())
     if not items:

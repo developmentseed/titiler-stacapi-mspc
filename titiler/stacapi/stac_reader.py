@@ -64,11 +64,6 @@ class STACReader(stac.STACReader):
     def _maxzoom(self):
         return self.tms.maxzoom
 
-    def _signed_url(self, url: str) -> str:
-        if re.match(stac_config.pc_blob_regex, url):
-            return planetary_computer.sign(url)
-        return url
-
     def _get_asset_info(self, asset: str) -> AssetInfo:
         """Validate asset names and return asset's url.
 
@@ -92,7 +87,7 @@ class STACReader(stac.STACReader):
             url = asset_info.to_dict()["alternate"][alternate]["href"]
 
         info = AssetInfo(
-            url=self._signed_url(url),
+            url=url,
             metadata=extras,
         )
 

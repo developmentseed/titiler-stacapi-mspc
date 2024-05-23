@@ -13,6 +13,7 @@ from cogeo_mosaic.mosaic import MosaicJSON
 from geojson_pydantic import Point, Polygon
 from geojson_pydantic.geometries import Geometry
 from morecantile import Tile, TileMatrixSet
+import planetary_computer as pc
 from pystac_client import ItemSearch
 from pystac_client.stac_api_io import StacApiIO
 from rasterio.crs import CRS
@@ -258,6 +259,7 @@ class STACAPIBackend(BaseBackend):
             f"{self.url}/search",
             stac_io=stac_api_io,
             **params,
+            modifier=pc.sign_inplace,
         )
         return list(results.items_as_dicts())
 
