@@ -29,7 +29,7 @@ def test_not_signed(pc_sign_mock):
 
 @patch("planetary_computer.sign")
 def test_signed(pc_sign_mock):
-    stac_reader = STACReader(pystac.Item.from_dict(landcover_item_json))
+    stac_reader = STACReader(pystac.Item.from_dict(landcover_item_json), include_asset_types={"application/netcdf"})
     asset_url = stac_reader.item.assets["netcdf"].href
     _ = stac_reader._signed_url(asset_url)
     pc_sign_mock.assert_called_once()

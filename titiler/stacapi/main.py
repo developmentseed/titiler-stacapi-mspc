@@ -21,7 +21,7 @@ from titiler.stacapi import models
 from titiler.stacapi.dependencies import ItemIdParams, OutputType, STACApiParams
 from titiler.stacapi.enums import MediaType
 from titiler.stacapi.factory import MosaicTilerFactory
-from titiler.stacapi.reader import STACReader
+from titiler.stacapi.stac_reader import STACReader
 from titiler.stacapi.settings import ApiSettings, STACAPISettings
 from titiler.stacapi.utils import create_html_response
 

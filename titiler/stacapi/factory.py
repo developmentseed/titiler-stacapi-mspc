@@ -44,7 +44,7 @@ from titiler.core.resources.enums import ImageType, MediaType, OptionalHeader
 from titiler.core.resources.responses import GeoJSONResponse, XMLResponse
 from titiler.core.utils import render_image
 from titiler.mosaic.factory import PixelSelectionParams
-from titiler.stacapi.backend import 
+from titiler.stacapi.backend import STACAPIBackend
 from titiler.stacapi.dependencies import APIParams, STACApiParams, STACSearchParams
 from titiler.stacapi.models import FeatureInfo, LayerDict
 from titiler.stacapi.settings import CacheSettings, RetrySettings
