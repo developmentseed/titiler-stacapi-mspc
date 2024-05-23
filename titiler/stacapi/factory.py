@@ -1,36 +1,23 @@
 """Custom MosaicTiler Factory for TiTiler-STACAPI Mosaic Backend."""
 
-import datetime as python_datetime
-import json
 import os
-from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any, Callable, Dict, List, Literal, Optional, Type
+from dataclasses import dataclass
+from typing import Any, Callable, Dict, Literal, Optional, Type
 from urllib.parse import urlencode
 
 import jinja2
 import rasterio
-from cachetools import TTLCache, cached
-from cachetools.keys import hashkey
 from cogeo_mosaic.backends import BaseBackend
 from fastapi import Depends, HTTPException, Path, Query
 from fastapi.dependencies.utils import get_dependant, request_params_to_args
-from morecantile import tms as morecantile_tms
-from morecantile.defaults import TileMatrixSets
 from pydantic import conint
-from pystac_client import Client
-from pystac_client.stac_api_io import StacApiIO
-from rasterio.transform import xy as rowcol_to_coords
-from rasterio.warp import transform as transform_points
 from rio_tiler.constants import MAX_THREADS
-from rio_tiler.models import ImageData
 from rio_tiler.mosaic.methods.base import MosaicMethodBase
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, Response
 from starlette.routing import compile_path, replace_params
 from starlette.templating import Jinja2Templates
 from typing_extensions import Annotated
-from urllib3 import Retry
 
 from titiler.core.dependencies import (
     AssetsBidxExprParams,
@@ -40,15 +27,12 @@ from titiler.core.dependencies import (
 )
 from titiler.core.factory import BaseTilerFactory, img_endpoint_params
 from titiler.core.models.mapbox import TileJSON
-from titiler.core.resources.enums import ImageType, MediaType, OptionalHeader
-from titiler.core.resources.responses import GeoJSONResponse, XMLResponse
+from titiler.core.resources.enums import ImageType, OptionalHeader
 from titiler.core.utils import render_image
 from titiler.mosaic.factory import PixelSelectionParams
 from titiler.stacapi.backend import STACAPIBackend
 from titiler.stacapi.dependencies import APIParams, STACApiParams, STACSearchParams
-from titiler.stacapi.models import FeatureInfo, LayerDict
 from titiler.stacapi.settings import CacheSettings, RetrySettings
-from titiler.stacapi.utils import _tms_limits
 
 cache_config = CacheSettings()
 retry_config = RetrySettings()
@@ -437,4 +421,3 @@ class MosaicTilerFactory(BaseTilerFactory):
                 },
                 media_type="text/html",
             )
-

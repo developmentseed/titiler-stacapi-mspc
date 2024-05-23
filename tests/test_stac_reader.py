@@ -5,7 +5,6 @@ import os
 from unittest.mock import patch
 
 import pystac
-import pytest
 
 from titiler.stacapi.stac_reader import STACReader
 
@@ -19,6 +18,7 @@ landcover_item_file = os.path.join(
 )
 landcover_item_json = json.loads(open(landcover_item_file).read())
 
+
 @patch("planetary_computer.sign")
 def test_not_signed(pc_sign_mock):
     stac_reader = STACReader(pystac.Item.from_dict(noaa_emergency_item_json))
@@ -27,9 +27,13 @@ def test_not_signed(pc_sign_mock):
     assert asset_url == unsigned_url
     pc_sign_mock.assert_not_called()
 
+
 @patch("planetary_computer.sign")
 def test_signed(pc_sign_mock):
-    stac_reader = STACReader(pystac.Item.from_dict(landcover_item_json), include_asset_types={"application/netcdf"})
+    stac_reader = STACReader(
+        pystac.Item.from_dict(landcover_item_json),
+        include_asset_types={"application/netcdf"},
+    )
     asset_url = stac_reader.item.assets["netcdf"].href
     _ = stac_reader._signed_url(asset_url)
     pc_sign_mock.assert_called_once()

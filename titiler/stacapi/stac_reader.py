@@ -1,24 +1,24 @@
 """Custom STAC reader."""
 
+import re
 from typing import Any, Dict, Optional, Set, Type
 
 import attr
+import planetary_computer
 import pystac
 import rasterio
 from morecantile import TileMatrixSet
-import planetary_computer
 from rasterio.crs import CRS
-import re
 from rio_tiler.constants import WEB_MERCATOR_TMS, WGS84_CRS
 from rio_tiler.errors import InvalidAssetName
 from rio_tiler.io import BaseReader, Reader, stac
 from rio_tiler.types import AssetInfo
 
-from titiler.stacapi.settings import STACSettings
-from titiler.stacapi.settings import STACAPISettings
+from titiler.stacapi.settings import STACAPISettings, STACSettings
 
 stac_config = STACSettings()
 stac_api_config = STACAPISettings()
+
 
 @attr.s
 class STACReader(stac.STACReader):
@@ -63,7 +63,7 @@ class STACReader(stac.STACReader):
     @maxzoom.default
     def _maxzoom(self):
         return self.tms.maxzoom
-    
+
     def _signed_url(self, url: str) -> str:
         if re.match(stac_config.pc_blob_regex, url):
             return planetary_computer.sign(url)

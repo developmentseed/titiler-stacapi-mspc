@@ -1,10 +1,10 @@
 """API settings."""
 
+import re
 from typing import Optional
 
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings
-import re
 from typing_extensions import Annotated
 
 
@@ -78,7 +78,7 @@ class STACAPISettings(BaseSettings):
     """STAC API settings"""
 
     stac_api_url: str = "https://planetarycomputer.microsoft.com/api/stac/v1"
-    
+
     model_config = {
         "env_prefix": "TITILER_STACAPI_STACAPI_",
         "env_file": ".env",
@@ -88,9 +88,11 @@ class STACAPISettings(BaseSettings):
 
 class STACSettings(BaseSettings):
     """STAC model settings"""
-    
+
     alternate_url: Optional[str] = None
-    pc_blob_regex: re.Pattern = re.compile(r".*/([^/]+?)\.blob\.core\.windows\.net/([^/]+?).*")
+    pc_blob_regex: re.Pattern = re.compile(
+        r".*/([^/]+?)\.blob\.core\.windows\.net/([^/]+?).*"
+    )
 
     model_config = {
         "env_prefix": "TITILER_STACAPI_STAC_",
