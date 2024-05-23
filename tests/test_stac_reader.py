@@ -21,6 +21,7 @@ landcover_item_json = json.loads(open(landcover_item_file).read())
 
 @patch("planetary_computer.sign")
 def test_not_signed(pc_sign_mock):
+    """ Test non-MS PC URLs are not signed. """
     stac_reader = STACReader(pystac.Item.from_dict(noaa_emergency_item_json))
     asset_url = stac_reader.item.assets["cog"].href
     unsigned_url = stac_reader._signed_url(asset_url)
@@ -30,6 +31,7 @@ def test_not_signed(pc_sign_mock):
 
 @patch("planetary_computer.sign")
 def test_signed(pc_sign_mock):
+    """Test MS PC URLs are signed."""
     stac_reader = STACReader(
         pystac.Item.from_dict(landcover_item_json),
         include_asset_types={"application/netcdf"},
