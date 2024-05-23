@@ -4,6 +4,7 @@ from typing import Optional
 
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings
+import re
 from typing_extensions import Annotated
 
 
@@ -67,7 +68,7 @@ class RetrySettings(BaseSettings):
     retry_factor: Annotated[float, Field(ge=0.0)] = 0.0
 
     model_config = {
-        "env_prefix": "TITILER_STACAPI_API_",
+        "env_prefix": "TITILER_STACAPI_RETRY_",
         "env_file": ".env",
         "extra": "ignore",
     }
@@ -76,23 +77,23 @@ class RetrySettings(BaseSettings):
 class STACAPISettings(BaseSettings):
     """STAC API settings"""
 
-    stac_api_url: str
-    mspc_default_api_url: str = "https://planetarycomputer.microsoft.com/api/stac/v1"
-
+    stac_api_url: str = "https://planetarycomputer.microsoft.com/api/stac/v1"
+    
     model_config = {
-        "env_prefix": "TITILER_STACAPI_",
+        "env_prefix": "TITILER_STACAPI_STACAPI_",
         "env_file": ".env",
         "extra": "ignore",
     }
 
 
 class STACSettings(BaseSettings):
-    """STAC API settings"""
+    """STAC model settings"""
     
     alternate_url: Optional[str] = None
+    pc_blob_regex: re.Pattern = re.compile(r".*/([^/]+?)\.blob\.core\.windows\.net/([^/]+?).*")
 
     model_config = {
-        "env_prefix": "TITILER_STACAPI_",
+        "env_prefix": "TITILER_STACAPI_STAC_",
         "env_file": ".env",
         "extra": "ignore",
     }
