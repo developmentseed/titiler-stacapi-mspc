@@ -1,7 +1,7 @@
 # titiler-stacapi-mspc
 
 <p align="center">
-  <img width="800" src="https://github.com/developmentseed/titiler-stacapi-mspc/assets/10407788/bb54162e-9a47-4a67-99e5-6dc91098e048">
+  <img width="800" src="https://github.com/developmentseed/titiler-stacapi/assets/10407788/bb54162e-9a47-4a67-99e5-6dc91098e048">
   <p align="center">Connect titiler to MS Planetary Computer STAC API</p>
 </p>
 
@@ -37,11 +37,7 @@ $ python -m pip install -e .
 
 ## Launch
 
-You'll need to have `TITILER_STACAPI_STAC_API_URL` variables set in your environment pointing to your STAC API service.
-
-```
-export TITILER_STACAPI_STAC_API_URL=https://api.stac
-```
+By default the `stac_api_url` is https://planetarycomputer.microsoft.com/api/stac/v1, but you can override it by setting the environment variable `TITILER_STACAPI_STAC_API_URL`.
 
 ```
 python -m pip install uvicorn
@@ -61,7 +57,7 @@ It runs `titiler.stacapi` using Gunicorn web server.
 
 ### How it works
 
-![](https://github.com/developmentseed/titiler-stacapi-mspc/assets/10407788/2e53bfe3-402a-4c57-bf61-c055e32f1362)
+![](https://github.com/developmentseed/titiler-stacapi/assets/10407788/2e53bfe3-402a-4c57-bf61-c055e32f1362)
 
 ## Contribution & Development
 
@@ -77,4 +73,4 @@ See [contributors](https://github.com/developmentseed/titiler-stacapi-mspc/graph
 
 ## Changes
 
-See [CHANGES.md](https://github.com/developmentseed/titiler-stacapi-mspc/blob/main/CHANGES.md).
+See [CHANGELOG.md](https://github.com/developmentseed/titiler-stacapi-mspc/blob/main/CHANGELOG.md).
