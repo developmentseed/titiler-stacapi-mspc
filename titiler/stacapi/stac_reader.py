@@ -1,10 +1,8 @@
 """Custom STAC reader."""
 
-import re
 from typing import Any, Dict, Optional, Set, Type
 
 import attr
-import planetary_computer
 import pystac
 import rasterio
 from morecantile import TileMatrixSet
@@ -14,10 +12,9 @@ from rio_tiler.errors import InvalidAssetName
 from rio_tiler.io import BaseReader, Reader, stac
 from rio_tiler.types import AssetInfo
 
-from titiler.stacapi.settings import STACAPISettings, STACSettings
+from titiler.stacapi.settings import STACSettings
 
 stac_config = STACSettings()
-stac_api_config = STACAPISettings()
 
 
 @attr.s

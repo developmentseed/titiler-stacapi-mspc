@@ -4,6 +4,7 @@ import json
 from typing import Any, Dict, List, Optional, Tuple, Type
 
 import attr
+import planetary_computer as pc
 import rasterio
 from cachetools import TTLCache, cached
 from cachetools.keys import hashkey
@@ -13,7 +14,6 @@ from cogeo_mosaic.mosaic import MosaicJSON
 from geojson_pydantic import Point, Polygon
 from geojson_pydantic.geometries import Geometry
 from morecantile import Tile, TileMatrixSet
-import planetary_computer as pc
 from pystac_client import ItemSearch
 from pystac_client.stac_api_io import StacApiIO
 from rasterio.crs import CRS
