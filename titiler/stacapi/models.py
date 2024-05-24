@@ -83,33 +83,3 @@ class Landing(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     links: List[Link]
-
-
-class Properties(BaseModel):
-    """Model for FeatureInfo properties."""
-
-    values: List[Union[float, int]]
-    I: int  # noqa: E741
-    J: int  # noqa: E741
-    dimension: Dict[str, str]
-    tileMatrixSet: str
-    tileMatrix: int
-    tileRow: int
-    tileCol: int
-
-
-FeatureInfo = Feature[Point, Properties]
-
-
-class LayerDict(TypedDict, total=False):
-    """Layer."""
-
-    id: str
-    collection: str
-    bbox: List[float]
-    format: Optional[str]
-    style: str
-    render: Optional[Dict]
-    tilematrixsets: Dict
-    time: Optional[List[str]]
-    query_string: str
