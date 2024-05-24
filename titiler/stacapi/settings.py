@@ -90,9 +90,6 @@ class STACSettings(BaseSettings):
     """STAC model settings"""
 
     alternate_url: Optional[str] = None
-    pc_blob_regex: re.Pattern = re.compile(
-        r".*/([^/]+?)\.blob\.core\.windows\.net/([^/]+?).*"
-    )
 
     model_config = {
         "env_prefix": "TITILER_STACAPI_STAC_",
