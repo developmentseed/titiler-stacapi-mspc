@@ -50,9 +50,9 @@ app = FastAPI(
 
 ---
 
-**Documentation**: <a href="https://developmentseed.org/titiler-stacapi/" target="_blank">https://developmentseed.org/titiler-stacapi/</a>
+**Documentation**: <a href="https://developmentseed.org/titiler-stacapi-mspc/" target="_blank">https://developmentseed.org/titiler-stacapi-mspc/</a>
 
-**Source Code**: <a href="https://github.com/developmentseed/titiler-stacapi" target="_blank">https://github.com/developmentseed/titiler-stacapi</a>
+**Source Code**: <a href="https://github.com/developmentseed/titiler-stacapi-mspc" target="_blank">https://github.com/developmentseed/titiler-stacapi-mspc</a>
 
 ---
     """,
@@ -189,14 +189,14 @@ def landing(
                 rel="data",
             ),
             models.Link(
-                title="TiTiler-STACAPI Documentation (external link)",
-                href="https://developmentseed.org/titiler-stacapi/",
+                title="titiler-stacapi-mspc Documentation (external link)",
+                href="https://developmentseed.org/titiler-stacapi-mspc/",
                 type=MediaType.html,
                 rel="doc",
             ),
             models.Link(
-                title="TiTiler-STACAPI source code (external link)",
-                href="https://github.com/developmentseed/titiler-stacapi",
+                title="titiler-stacapi-mspc source code (external link)",
+                href="https://github.com/developmentseed/titiler-stacapi-mspc",
                 type=MediaType.html,
                 rel="doc",
             ),

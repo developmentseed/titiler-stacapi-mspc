@@ -45,11 +45,11 @@ test = [
 ]
 
 [project.urls]
-Homepage = 'https://developmentseed.org/titiler-stacapi/'
-Documentation = "https://developmentseed.org/titiler-stacapi/"
-Issues = "https://github.com/developmentseed/titiler-stacapi/issues"
-Source = "https://github.com/developmentseed/titiler-stacapi"
-Changelog = "https://developmentseed.org/titiler-stacapi/release-notes/"
+Homepage = 'https://developmentseed.org/titiler-stacapi-mspc/'
+Documentation = "https://developmentseed.org/titiler-stacapi-mspc/"
+Issues = "https://github.com/developmentseed/titiler-stacapi-mspc/issues"
+Source = "https://github.com/developmentseed/titiler-stacapi-mspc"
+Changelog = "https://developmentseed.org/titiler-stacapi-mspc/release-notes/"
 
 [build-system]
 requires = ["pdm-pep517"]

@@ -1,11 +1,9 @@
 ---
-
 title: Endpoints
-
 ---
 
 <p align="center">
-  <img alt="titiler-pgstac OpenAPI documentation" src="https://github.com/developmentseed/titiler-stacapi/assets/10407788/a4a7619f-8929-41d8-9a0e-26419013b5a8"/>
+  <img alt="titiler-stacapi OpenAPI documentation" src="https://github.com/developmentseed/titiler-stacapi/assets/10407788/a4a7619f-8929-41d8-9a0e-26419013b5a8"/>
 </p>
 
 By default the main application (`titiler.pgstac.main.app`) provides three sets of endpoints:

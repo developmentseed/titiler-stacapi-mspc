@@ -4,10 +4,10 @@ site_description: Connect titiler to STAC APIs.
 docs_dir: "src"
 site_dir: "build"
 
-repo_name: developmentseed/titiler-stacapi
-repo_url: https://github.com/developmentseed/titiler-stacapi
+repo_name: developmentseed/titiler-stacapi-mspc
+repo_url: https://github.com/developmentseed/titiler-stacapi-mspc
 edit_uri: blob/main/docs/
-site_url: https://developmentseed.org/titiler-stacapi/
+site_url: https://developmentseed.org/titiler-stacapi-mspc/
 
 extra:
   social:
