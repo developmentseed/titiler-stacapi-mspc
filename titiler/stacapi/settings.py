@@ -67,7 +67,7 @@ class RetrySettings(BaseSettings):
     retry_factor: Annotated[float, Field(ge=0.0)] = 0.0
 
     model_config = {
-        "env_prefix": "TITILER_STACAPI_RETRY_",
+        "env_prefix": "TITILER_STACAPI_API_",
         "env_file": ".env",
         "extra": "ignore",
     }
@@ -79,19 +79,19 @@ class STACAPISettings(BaseSettings):
     stac_api_url: str = "https://planetarycomputer.microsoft.com/api/stac/v1"
 
     model_config = {
-        "env_prefix": "TITILER_STACAPI_STACAPI_",
+        "env_prefix": "TITILER_STACAPI_",
         "env_file": ".env",
         "extra": "ignore",
     }
 
 
 class STACSettings(BaseSettings):
-    """STAC model settings"""
+    """STAC API settings"""
 
     alternate_url: Optional[str] = None
 
     model_config = {
-        "env_prefix": "TITILER_STACAPI_STAC_",
+        "env_prefix": "TITILER_STACAPI_",
         "env_file": ".env",
         "extra": "ignore",
     }

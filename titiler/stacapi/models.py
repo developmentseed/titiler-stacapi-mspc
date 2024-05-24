@@ -6,9 +6,8 @@ see: https://github.com/developmentseed/ogcapi-pydantic
 
 """
 
-from typing import Dict, List, Optional, TypedDict, Union
+from typing import List, Optional
 
-from geojson_pydantic import Feature, Point
 from pydantic import BaseModel, Field
 from typing_extensions import Annotated
 
