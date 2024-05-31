@@ -15,7 +15,7 @@ item_json = json.loads(open(item_file).read())
 
 
 def test_stac_items():
-    """ Test reader attribute is rio_tiler.io.Reader """
+    """Test reader attribute is rio_tiler.io.Reader"""
     stac_reader = STACReader(pystac.Item.from_dict(item_json))
     _ = stac_reader._get_asset_info("cog")
     assert stac_reader.reader == Reader
