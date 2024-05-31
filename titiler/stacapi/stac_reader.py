@@ -22,7 +22,6 @@ valid_types = {
     "image/tiff; application=geotiff",
     "image/tiff; application=geotiff; profile=cloud-optimized",
     "image/tiff; profile=cloud-optimized; application=geotiff",
-    "image/tiff; application=geotiff; profile=cloud-optimized",
     "image/vnd.stac.geotiff; cloud-optimized=true",
     "image/tiff",
     "image/x.geotiff",
@@ -32,6 +31,7 @@ valid_types = {
     "application/vnd+zarr",
     "application/x-netcdf",
 }
+
 
 @attr.s
 class STACReader(stac.STACReader):
@@ -52,8 +52,8 @@ class STACReader(stac.STACReader):
     include_assets: Optional[Set[str]] = attr.ib(default=None)
     exclude_assets: Optional[Set[str]] = attr.ib(default=None)
 
-    include_asset_types: Set[str] = attr.ib(default=stac.DEFAULT_VALID_TYPE)
     exclude_asset_types: Optional[Set[str]] = attr.ib(default=None)
+    include_asset_types: Set[str] = attr.ib(default=valid_types)
 
     reader: Type[BaseReader] = attr.ib(default=Reader)
     reader_options: Dict = attr.ib(factory=dict)
@@ -64,8 +64,6 @@ class STACReader(stac.STACReader):
 
     item: pystac.Item = attr.ib(init=False)
 
-    include_asset_types: Set[str] = attr.ib(default=valid_types)
-
     def _get_reader(self, asset_info: AssetInfo) -> Type[BaseReader]:
         """Get Asset Reader."""
         asset_type = asset_info.get("type", None)
@@ -75,7 +73,6 @@ class STACReader(stac.STACReader):
             "application/x-hdf",
             "application/vnd.zarr",
             "application/x-netcdf",
-
         ]:
             return XarrayReader
 
@@ -120,9 +117,9 @@ class STACReader(stac.STACReader):
             url=url,
             metadata=extras,
         )
-        
+
         # Replace this and the _get_reader method once https://github.com/cogeotiff/rio-tiler/pull/711 is merged and released.
-        self.reader = self._get_reader(info)        
+        self.reader = self._get_reader(info)
 
         if head := extras.get("file:header_size"):
             info["env"] = {"GDAL_INGESTED_BYTES_AT_OPEN": head}
