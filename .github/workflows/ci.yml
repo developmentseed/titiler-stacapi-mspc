@@ -5,29 +5,31 @@ on:
   workflow_dispatch:
   push:
     branches:
-    - main
-    - develop
+      - main
+      - develop
     tags:
-    - '*'
+      - "*"
     paths:
       # Only run test and docker publish if some code have changed
-      - 'pyproject.toml'
-      - 'titiler/**'
-      - '.pre-commit-config.yaml'
-      - '.github/workflows/ci.yml'
+      - "pyproject.toml"
+      - "titiler/**"
+      - ".pre-commit-config.yaml"
+      - ".github/workflows/ci.yml"
 
   # Run tests on pull requests.
   pull_request:
+    branches:
+      - main
 env:
-  LATEST_PY_VERSION: '3.12'
-
+  LATEST_PY_VERSION: "3.12"
 
 jobs:
   tests:
     runs-on: ubuntu-latest
+    if: github.event.pull_request.base.ref == 'main' || github.event_name != 'pull_request'
     strategy:
       matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
 
     steps:
       - uses: actions/checkout@v4
@@ -59,13 +61,12 @@ jobs:
           name: ${{ matrix.python-version }}
           fail_ci_if_error: false
 
-
   publish-docker:
     needs: [tests]
     # runs on push to main, on tag creation, and on release
     if: github.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/tags') || github.event_name == 'release'
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -98,7 +99,7 @@ jobs:
           file: dockerfiles/Dockerfile
           push: true
           tags: |
-            ghcr.io/developmentseed/titiler-stacapi:latest
+            ghcr.io/developmentseed/titiler-stacapi-mspc:latest
 
       # Push `{VERSION}` when pushing a new tag
       - name: Build and push tag
@@ -110,4 +111,4 @@ jobs:
           file: dockerfiles/Dockerfile
           push: true
           tags: |
-            ghcr.io/developmentseed/titiler-stacapi:${{ steps.tag.outputs.version }}
+            ghcr.io/developmentseed/titiler-stacapi-mspc:${{ steps.tag.outputs.version }}

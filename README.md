@@ -6,22 +6,22 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/developmentseed/titiler-stacapi/actions?query=workflow%3ACI" target="_blank">
-      <img src="https://github.com/developmentseed/titiler-stacapi/workflows/CI/badge.svg" alt="Test">
+  <a href="https://github.com/developmentseed/titiler-stacapi-mspc/actions?query=workflow%3ACI" target="_blank">
+      <img src="https://github.com/developmentseed/titiler-stacapi-mspc/workflows/CI/badge.svg" alt="Test">
   </a>
-  <a href="https://codecov.io/gh/developmentseed/titiler-stacapi" target="_blank">
-      <img src="https://codecov.io/gh/developmentseed/titiler-stacapi/branch/main/graph/badge.svg" alt="Coverage">
+  <a href="https://codecov.io/gh/developmentseed/titiler-stacapi-mspc" target="_blank">
+      <img src="https://codecov.io/gh/developmentseed/titiler-stacapi-mspc/branch/main/graph/badge.svg" alt="Coverage">
   </a>
-  <a href="https://github.com/developmentseed/titiler-stacapi/blob/main/LICENSE" target="_blank">
-      <img src="https://img.shields.io/github/license/developmentseed/titiler-stacapi.svg" alt="License">
+  <a href="https://github.com/developmentseed/titiler-stacapi-mspc/blob/main/LICENSE" target="_blank">
+      <img src="https://img.shields.io/github/license/developmentseed/titiler-stacapi-mspc.svg" alt="License">
   </a>
 </p>
 
 ---
 
-**Documentation**: <a href="https://developmentseed.org/titiler-stacapi/" target="_blank">https://developmentseed.org/titiler-stacapi/</a>
+**Documentation**: <a href="https://developmentseed.org/titiler-stacapi-mspc/" target="_blank">https://developmentseed.org/titiler-stacapi-mspc/</a>
 
-**Source Code**: <a href="https://github.com/developmentseed/titiler-stacapi" target="_blank">https://github.com/developmentseed/titiler-stacapi</a>
+**Source Code**: <a href="https://github.com/developmentseed/titiler-stacapi-mspc" target="_blank">https://github.com/developmentseed/titiler-stacapi-mspc</a>
 
 ---
 
@@ -30,8 +30,8 @@
 Install from sources and run for development:
 
 ```
-$ git clone https://github.com/developmentseed/titiler-stacapi.git
-$ cd titiler-stacapi
+$ git clone https://github.com/developmentseed/titiler-stacapi-mspc.git
+$ cd titiler-stacapi-mspc
 $ virtualenv -p python3 venv
 $ source venv/bin/activate
 $ python -m pip install -e .
@@ -39,11 +39,7 @@ $ python -m pip install -e .
 
 ## Launch
 
-You'll need to have `TITILER_STACAPI_STAC_API_URL` variables set in your environment pointing to your STAC API service.
-
-```
-export TITILER_STACAPI_STAC_API_URL=https://api.stac
-```
+By default the `stac_api_url` is https://planetarycomputer.microsoft.com/api/stac/v1, but you can override it by setting the environment variable `TITILER_STACAPI_STAC_API_URL`.
 
 ```
 python -m pip install uvicorn
@@ -54,8 +50,8 @@ uvicorn titiler.stacapi.main:app --port 8000
 ### Using Docker
 
 ```
-$ git clone https://github.com/developmentseed/titiler-stacapi.git
-$ cd titiler-stacapi
+$ git clone https://github.com/developmentseed/titiler-stacapi-mspc.git
+$ cd titiler-stacapi-mspc
 $ docker-compose up --build api
 ```
 
@@ -67,16 +63,16 @@ It runs `titiler.stacapi` using Gunicorn web server.
 
 ## Contribution & Development
 
-See [CONTRIBUTING.md](https://github.com//developmentseed/titiler-stacapi/blob/main/CONTRIBUTING.md)
+See [CONTRIBUTING.md](https://github.com//developmentseed/titiler-stacapi-mspc/blob/main/CONTRIBUTING.md)
 
 ## License
 
-See [LICENSE](https://github.com//developmentseed/titiler-stacapi/blob/main/LICENSE)
+See [LICENSE](https://github.com//developmentseed/titiler-stacapi-mspc/blob/main/LICENSE)
 
 ## Authors
 
-See [contributors](https://github.com/developmentseed/titiler-stacapi/graphs/contributors) for a listing of individual contributors.
+See [contributors](https://github.com/developmentseed/titiler-stacapi-mspc/graphs/contributors) for a listing of individual contributors.
 
 ## Changes
 
-See [CHANGES.md](https://github.com/developmentseed/titiler-stacapi/blob/main/CHANGES.md).
+See [CHANGELOG.md](https://github.com/developmentseed/titiler-stacapi-mspc/blob/main/CHANGELOG.md).

@@ -3,6 +3,7 @@
 import json
 from typing import Dict, List, Literal, Optional, TypedDict, get_args
 
+import planetary_computer as pc
 import pystac
 from cachetools import TTLCache, cached
 from cachetools.keys import hashkey
@@ -123,7 +124,11 @@ def get_stac_item(
         headers=headers,
     )
     results = ItemSearch(
-        f"{url}/search", stac_io=stac_api_io, collections=[collection_id], ids=[item_id]
+        f"{url}/search",
+        stac_io=stac_api_io,
+        collections=[collection_id],
+        ids=[item_id],
+        modifier=pc.sign_inplace,
     )
     items = list(results.items())
     if not items:

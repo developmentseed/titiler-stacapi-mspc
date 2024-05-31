@@ -76,8 +76,7 @@ class RetrySettings(BaseSettings):
 class STACAPISettings(BaseSettings):
     """STAC API settings"""
 
-    stac_api_url: str
-    mspc_default_api_url: str = "https://planetarycomputer.microsoft.com/api/stac/v1"
+    stac_api_url: str = "https://planetarycomputer.microsoft.com/api/stac/v1"
 
     model_config = {
         "env_prefix": "TITILER_STACAPI_",
@@ -88,7 +87,7 @@ class STACAPISettings(BaseSettings):
 
 class STACSettings(BaseSettings):
     """STAC API settings"""
-    
+
     alternate_url: Optional[str] = None
 
     model_config = {

@@ -4,6 +4,7 @@ import json
 from typing import Any, Dict, List, Optional, Tuple, Type
 
 import attr
+import planetary_computer as pc
 import rasterio
 from cachetools import TTLCache, cached
 from cachetools.keys import hashkey
@@ -258,6 +259,7 @@ class STACAPIBackend(BaseBackend):
             f"{self.url}/search",
             stac_io=stac_api_io,
             **params,
+            modifier=pc.sign_inplace,
         )
         return list(results.items_as_dicts())
 
