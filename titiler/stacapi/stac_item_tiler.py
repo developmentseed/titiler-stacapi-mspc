@@ -1,28 +1,26 @@
-from dataclasses import field
-from typing import Any, Callable, Dict, List, Literal, Optional, Type, Union
+"""STAC Item Tiler."""
+from dataclasses import dataclass, field
+from typing import Any, Callable, List, Literal, Optional, Type, Union
 
 import numpy
-from dataclasses import dataclass, field
 from fastapi import APIRouter, Depends, Path, Query
 from morecantile import tms as default_tms
 from morecantile.defaults import TileMatrixSets
 from pydantic import conint
-from rio_tiler.io import BaseReader, Reader
+from rio_tiler.io import BaseReader
 from rio_tiler.types import RIOResampling, WarpResampling
 from starlette.requests import Request
 from starlette.responses import Response
-from starlette.routing import compile_path, replace_params
 from typing_extensions import Annotated
 
-from titiler.core import dependencies
-from titiler.core.dependencies import DatasetPathParams
+from titiler.core import BaseTilerFactory, dependencies
 from titiler.core.algorithm import algorithms as available_algorithms
+from titiler.core.dependencies import DatasetPathParams
 from titiler.core.factory import img_endpoint_params
 from titiler.core.resources.enums import ImageType
 from titiler.core.utils import render_image
 from titiler.stacapi.stac_reader import STACReader
-from titiler.stacapi.backend import STACAPIBackend
-from titiler.core import BaseTilerFactory
+
 
 @dataclass
 class StacItemTiler(BaseTilerFactory):
@@ -104,7 +102,7 @@ class StacItemTiler(BaseTilerFactory):
             asset: Annotated[
                 str,
                 "Asset name to read from (STAC Item asset name)",
-            ] = None,
+            ] = "",
             ###################################################################
             # XarrayReader Options
             ###################################################################
@@ -216,17 +214,19 @@ class StacItemTiler(BaseTilerFactory):
                 "variable": variable,
             }
 
-            with stac_item_reader._get_asset_reader(asset_info)(**reader_options) as src_dst:
-                    image, _ = src_dst.tile(
-                        x,
-                        y,
-                        z,
-                        tilesize=scale * 256,
-                        nodata=nodata,
-                        reproject_method=reproject_method,
-                        assets=[asset]
-                        #**read_options,
-                    )
+            with stac_item_reader._get_asset_reader(asset_info)(
+                **reader_options
+            ) as src_dst:
+                image, _ = src_dst.tile(
+                    x,
+                    y,
+                    z,
+                    tilesize=scale * 256,
+                    nodata=nodata,
+                    reproject_method=reproject_method,
+                    assets=[asset]
+                    # **read_options,
+                )
 
             if post_process:
                 image = post_process(image)
