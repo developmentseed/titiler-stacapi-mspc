@@ -9,11 +9,12 @@ from morecantile import TileMatrixSet
 from rasterio.crs import CRS
 from rio_tiler.constants import WEB_MERCATOR_TMS, WGS84_CRS
 from rio_tiler.errors import InvalidAssetName
-from rio_tiler.io import BaseReader, Reader, XarrayReader, stac
+from rio_tiler.io import BaseReader, Reader, stac
 
 # Also replace with rio_tiler import when https://github.com/cogeotiff/rio-tiler/pull/711 is merged and released.
 from titiler.stacapi.models import AssetInfo
 from titiler.stacapi.settings import STACSettings
+from titiler.stacapi.xarray_reader import XarrayReader
 
 stac_config = STACSettings()
 
@@ -30,6 +31,7 @@ valid_types = {
     "application/x-hdf",
     "application/vnd+zarr",
     "application/x-netcdf",
+    "application/netcdf",
 }
 
 
@@ -37,11 +39,11 @@ valid_types = {
 class STACReader(stac.STACReader):
     """Custom STAC Reader.
 
-    Only accept `pystac.Item` as input (while rio_tiler.io.STACReader accepts url or pystac.Item)
+    Use STAC item URL to fetch and set the item and determine which backend reader (xarray or rasterio) to use.
 
     """
-
-    input: pystac.Item = attr.ib()
+    input: str = attr.ib()
+    item: pystac.Item = attr.ib()
 
     tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
     minzoom: int = attr.ib()
@@ -62,8 +64,6 @@ class STACReader(stac.STACReader):
 
     ctx: Any = attr.ib(default=rasterio.Env)
 
-    item: pystac.Item = attr.ib(init=False)
-
     def _get_reader(self, asset_info: AssetInfo) -> Type[BaseReader]:
         """Get Asset Reader."""
         asset_type = asset_info.get("type", None)
@@ -73,15 +73,12 @@ class STACReader(stac.STACReader):
             "application/x-hdf",
             "application/vnd.zarr",
             "application/x-netcdf",
+            "application/netcdf",
         ]:
             return XarrayReader
 
         return Reader
 
-    def __attrs_post_init__(self):
-        """Fetch STAC Item and get list of valid assets."""
-        self.item = self.input
-        super().__attrs_post_init__()
 
     @minzoom.default
     def _minzoom(self):
@@ -116,10 +113,8 @@ class STACReader(stac.STACReader):
         info = AssetInfo(
             url=url,
             metadata=extras,
+            type=asset_info.to_dict()['type']
         )
-
-        # Replace this and the _get_reader method once https://github.com/cogeotiff/rio-tiler/pull/711 is merged and released.
-        self.reader = self._get_reader(info)
 
         if head := extras.get("file:header_size"):
             info["env"] = {"GDAL_INGESTED_BYTES_AT_OPEN": head}

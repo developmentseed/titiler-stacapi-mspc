@@ -24,6 +24,7 @@ from titiler.stacapi.factory import MosaicTilerFactory
 from titiler.stacapi.settings import ApiSettings, STACAPISettings
 from titiler.stacapi.stac_reader import STACReader
 from titiler.stacapi.utils import create_html_response
+from titiler.stacapi.stac_item_tiler import StacItemTiler
 
 settings = ApiSettings()
 stacapi_config = STACAPISettings()
@@ -101,33 +102,13 @@ app.include_router(
 
 ###############################################################################
 # STAC Item Endpoints
-# Notes: The `MultiBaseTilerFactory` from titiler.core.factory expect a `URL` as query parameter
-# but in this project we use a custom `path_dependency=ItemIdParams`, which define `{collection_id}` and `{item_id}` as
-# `Path` dependencies. Then the `ItemIdParams` dependency will fetch the STAC API endpoint to get the STAC Item. The Item
-# will then be used in our custom `STACReader`.
-stac = MultiBaseTilerFactory(
-    reader=STACReader,
+endpoints = StacItemTiler(
+    title=settings.name,
     path_dependency=ItemIdParams,
-    optional_headers=optional_headers,
+    reader=STACReader,
     router_prefix="/collections/{collection_id}/items/{item_id}",
-    add_viewer=True,
 )
-app.include_router(
-    stac.router,
-    tags=["STAC Item"],
-    prefix="/collections/{collection_id}/items/{item_id}",
-)
-
-###############################################################################
-# Tiling Schemes Endpoints
-tms = TMSFactory()
-app.include_router(tms.router, tags=["Tiling Schemes"])
-
-###############################################################################
-# Algorithms Endpoints
-algorithms = AlgorithmFactory()
-app.include_router(algorithms.router, tags=["Algorithms"])
-
+app.include_router(endpoints.router, tags=["STAC Items"], prefix="/collections/{collection_id}/items/{item_id}")
 
 ###############################################################################
 # Health Check Endpoint
