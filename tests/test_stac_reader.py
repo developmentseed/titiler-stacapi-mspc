@@ -1,8 +1,9 @@
-"""Test titiler.stacapi Item endpoints."""
+"""Test titiler.stacapi.stac_reader functions."""
 
 import json
 import os
 
+import pytest
 import pystac
 from rio_tiler.io import Reader
 
@@ -13,9 +14,20 @@ item_file = os.path.join(
 )
 item_json = json.loads(open(item_file).read())
 
+@pytest.mark.skip(reason="To be implemented.")
+def test_asset_info():
+    """Test get_asset_info function"""
+    pass
 
-def test_stac_items():
-    """Test reader attribute is rio_tiler.io.Reader"""
+def test_stac_reader_cog():
+    """Test reader is rio_tiler.io.Reader"""
     stac_reader = STACReader(pystac.Item.from_dict(item_json))
-    _ = stac_reader._get_asset_info("cog")
-    assert stac_reader.reader == Reader
+    asset_info = stac_reader._get_asset_info("cog")
+    assert stac_reader._get_asset_reader(asset_info) == Reader
+
+@pytest.mark.skip(reason="To be implemented.")
+def test_stac_reader_netcdf():
+    """Test reader attribute is titiler.stacapi.XarrayReader"""
+    pass
+
+

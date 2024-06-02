@@ -42,6 +42,7 @@ class STACReader(stac.STACReader):
     Use STAC item URL to fetch and set the item and determine which backend reader (xarray or rasterio) to use.
 
     """
+
     input: str = attr.ib()
     item: pystac.Item = attr.ib()
 
@@ -64,7 +65,7 @@ class STACReader(stac.STACReader):
 
     ctx: Any = attr.ib(default=rasterio.Env)
 
-    def _get_reader(self, asset_info: AssetInfo) -> Type[BaseReader]:
+    def _get_asset_reader(self, asset_info: AssetInfo) -> Type[BaseReader]:
         """Get Asset Reader."""
         asset_type = asset_info.get("type", None)
 
@@ -78,7 +79,6 @@ class STACReader(stac.STACReader):
             return XarrayReader
 
         return Reader
-
 
     @minzoom.default
     def _minzoom(self):
@@ -110,11 +110,7 @@ class STACReader(stac.STACReader):
         if alternate := stac_config.alternate_url:
             url = asset_info.to_dict()["alternate"][alternate]["href"]
 
-        info = AssetInfo(
-            url=url,
-            metadata=extras,
-            type=asset_info.to_dict()['type']
-        )
+        info = AssetInfo(url=url, metadata=extras, type=asset_info.to_dict()["type"])
 
         if head := extras.get("file:header_size"):
             info["env"] = {"GDAL_INGESTED_BYTES_AT_OPEN": head}

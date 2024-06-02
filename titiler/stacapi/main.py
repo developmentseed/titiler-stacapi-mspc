@@ -12,7 +12,6 @@ from starlette.templating import Jinja2Templates
 from typing_extensions import Annotated
 
 from titiler.core.errors import DEFAULT_STATUS_CODES, add_exception_handlers
-from titiler.core.factory import AlgorithmFactory, MultiBaseTilerFactory, TMSFactory
 from titiler.core.middleware import CacheControlMiddleware, LoggerMiddleware
 from titiler.core.resources.enums import OptionalHeader
 from titiler.mosaic.errors import MOSAIC_STATUS_CODES
@@ -22,9 +21,9 @@ from titiler.stacapi.dependencies import ItemIdParams, OutputType, STACApiParams
 from titiler.stacapi.enums import MediaType
 from titiler.stacapi.factory import MosaicTilerFactory
 from titiler.stacapi.settings import ApiSettings, STACAPISettings
+from titiler.stacapi.stac_item_tiler import StacItemTiler
 from titiler.stacapi.stac_reader import STACReader
 from titiler.stacapi.utils import create_html_response
-from titiler.stacapi.stac_item_tiler import StacItemTiler
 
 settings = ApiSettings()
 stacapi_config = STACAPISettings()
@@ -108,7 +107,11 @@ endpoints = StacItemTiler(
     reader=STACReader,
     router_prefix="/collections/{collection_id}/items/{item_id}",
 )
-app.include_router(endpoints.router, tags=["STAC Items"], prefix="/collections/{collection_id}/items/{item_id}")
+app.include_router(
+    endpoints.router,
+    tags=["STAC Items"],
+    prefix="/collections/{collection_id}/items/{item_id}",
+)
 
 ###############################################################################
 # Health Check Endpoint
