@@ -8,8 +8,8 @@ import pytest
 from rio_tiler.io import Reader
 from rio_tiler.models import ImageData
 
-from titiler.stacapi.models import AssetInfo
 from titiler.stacapi.asset_reader import AssetReader
+from titiler.stacapi.models import AssetInfo
 from titiler.stacapi.xarray import XarrayReader
 
 from .conftest import mock_rasterio_open
@@ -38,6 +38,7 @@ def test_get_reader_netcdf():
     asset_info = AssetInfo(url="https://file.nc", type="application/netcdf")
     empty_stac_reader = AssetReader({})
     assert empty_stac_reader._get_reader(asset_info) == XarrayReader
+
 
 @patch("rio_tiler.io.rasterio.rasterio")
 def test_tile_cog(rio):

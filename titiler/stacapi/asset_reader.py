@@ -1,4 +1,4 @@
-"""titiler-stacapi custom STACReader."""
+"""titiler-stacapi Asset Reader."""
 
 import warnings
 from typing import Any, Dict, Optional, Sequence, Set, Type, Union
@@ -6,7 +6,7 @@ from typing import Any, Dict, Optional, Sequence, Set, Type, Union
 import attr
 import rasterio
 from morecantile import TileMatrixSet
-from rio_tiler.constants import WEB_MERCATOR_TMS, WGS84_CRS
+from rio_tiler.constants import WEB_MERCATOR_TMS
 from rio_tiler.errors import (
     AssetAsBandError,
     ExpressionMixingWarning,
@@ -49,6 +49,7 @@ class AssetReader(MultiBaseReader):
     Asset reader for STAC items.
     """
 
+    input: Any = attr.ib()
     tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
     minzoom: int = attr.ib()
     maxzoom: int = attr.ib()
@@ -91,7 +92,7 @@ class AssetReader(MultiBaseReader):
             asset (str): asset name.
 
         Returns:
-            AssetInfo: STAC asset info
+            AssetInfo: Asset info
 
         """
         if asset not in self.assets:

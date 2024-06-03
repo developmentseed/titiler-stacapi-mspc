@@ -23,8 +23,8 @@ from rio_tiler.mosaic import mosaic_reader
 from rio_tiler.types import BBox
 from urllib3 import Retry
 
-from titiler.stacapi.settings import CacheSettings, RetrySettings, STACSettings
 from titiler.stacapi.asset_reader import AssetReader
+from titiler.stacapi.settings import CacheSettings, RetrySettings, STACSettings
 from titiler.stacapi.utils import Timer
 
 cache_config = CacheSettings()
