@@ -101,14 +101,14 @@ app.include_router(
 
 ###############################################################################
 # STAC Item Endpoints
-endpoints = StacItemTiler(
+stac_item_tiler = StacItemTiler(
     title=settings.name,
     path_dependency=ItemIdParams,
     reader=STACReader,
     router_prefix="/collections/{collection_id}/items/{item_id}",
 )
 app.include_router(
-    endpoints.router,
+    stac_item_tiler.router,
     tags=["STAC Items"],
     prefix="/collections/{collection_id}/items/{item_id}",
 )
