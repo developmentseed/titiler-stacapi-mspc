@@ -44,24 +44,11 @@ valid_types = {
 
 
 @attr.s
-class CustomSTACReader(MultiBaseReader):
-    """Simplified STAC Reader.
-
-    Inputs should be in form of:
-    {
-        "id": "IAMASTACITEM",
-        "collection": "mycollection",
-        "bbox": (0, 0, 10, 10),
-        "assets": {
-            "COG": {
-                "href": "https://somewhereovertherainbow.io/cog.tif"
-            }
-        }
-    }
-
+class AssetReader(MultiBaseReader):
+    """
+    Asset reader for STAC items.
     """
 
-    input: Dict[str, Any] = attr.ib()
     tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
     minzoom: int = attr.ib()
     maxzoom: int = attr.ib()
@@ -72,12 +59,6 @@ class CustomSTACReader(MultiBaseReader):
     ctx: Any = attr.ib(default=rasterio.Env)
 
     include_asset_types: Set[str] = attr.ib(default=valid_types)
-
-    def __attrs_post_init__(self) -> None:
-        """Set reader spatial infos and list of valid assets."""
-        self.bounds = self.input["bbox"]
-        self.crs = WGS84_CRS  # Per specification STAC items are in WGS84
-        self.assets = list(self.input["assets"])
 
     @minzoom.default
     def _minzoom(self):
@@ -107,10 +88,10 @@ class CustomSTACReader(MultiBaseReader):
         Validate asset names and return asset's info.
 
         Args:
-            AssetInfo (str): STAC asset info.
+            asset (str): asset name.
 
         Returns:
-            str: STAC asset href.
+            AssetInfo: STAC asset info
 
         """
         if asset not in self.assets:

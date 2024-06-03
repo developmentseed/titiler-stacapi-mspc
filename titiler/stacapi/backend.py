@@ -24,7 +24,7 @@ from rio_tiler.types import BBox
 from urllib3 import Retry
 
 from titiler.stacapi.settings import CacheSettings, RetrySettings, STACSettings
-from titiler.stacapi.stac_reader import CustomSTACReader
+from titiler.stacapi.asset_reader import AssetReader
 from titiler.stacapi.utils import Timer
 
 cache_config = CacheSettings()
@@ -45,8 +45,8 @@ class STACAPIBackend(BaseBackend):
     minzoom: int = attr.ib()
     maxzoom: int = attr.ib()
 
-    # Use Custom STAC reader (outside init)
-    reader: Type[CustomSTACReader] = attr.ib(init=False, default=CustomSTACReader)
+    # Use custom asset reader (outside init)
+    reader: Type[AssetReader] = attr.ib(init=False, default=AssetReader)
     reader_options: Dict = attr.ib(factory=dict)
 
     # default values for bounds

@@ -9,7 +9,7 @@ from rio_tiler.io import Reader
 from rio_tiler.models import ImageData
 
 from titiler.stacapi.models import AssetInfo
-from titiler.stacapi.stac_reader import CustomSTACReader
+from titiler.stacapi.asset_reader import AssetReader
 from titiler.stacapi.xarray import XarrayReader
 
 from .conftest import mock_rasterio_open
@@ -26,26 +26,24 @@ def test_asset_info():
     pass
 
 
-empty_stac_reader = CustomSTACReader({"assets": [], "bbox": []})
-
-
-def test_get_reader_cog():
+def test_get_reader_any():
     """Test reader is rio_tiler.io.Reader"""
     asset_info = AssetInfo(url="https://file.tif")
+    empty_stac_reader = AssetReader({})
     assert empty_stac_reader._get_reader(asset_info) == Reader
 
 
 def test_get_reader_netcdf():
     """Test reader attribute is titiler.stacapi.XarrayReader"""
     asset_info = AssetInfo(url="https://file.nc", type="application/netcdf")
+    empty_stac_reader = AssetReader({})
     assert empty_stac_reader._get_reader(asset_info) == XarrayReader
-
 
 @patch("rio_tiler.io.rasterio.rasterio")
 def test_tile_cog(rio):
     """Test tile function with COG asset."""
     rio.open = mock_rasterio_open
-    with CustomSTACReader(item_json) as reader:
+    with AssetReader(item_json) as reader:
         img = reader.tile(0, 0, 0, assets=["cog"])
         assert type(img) == ImageData
 
