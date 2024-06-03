@@ -102,61 +102,6 @@ def STACApiParams(
         api_url=request.app.state.stac_url,
     )
 
-
-@cached(  # type: ignore
-    TTLCache(maxsize=cache_config.maxsize, ttl=cache_config.ttl),
-    key=lambda url, collection_id, item_id, headers, **kwargs: hashkey(
-        url, collection_id, item_id, json.dumps(headers)
-    ),
-)
-def get_stac_item(
-    url: str,
-    collection_id: str,
-    item_id: str,
-    headers: Optional[Dict] = None,
-) -> pystac.Item:
-    """Get STAC Item from STAC API."""
-    stac_api_io = StacApiIO(
-        max_retries=Retry(
-            total=retry_config.retry,
-            backoff_factor=retry_config.retry_factor,
-        ),
-        headers=headers,
-    )
-    results = ItemSearch(
-        f"{url}/search",
-        stac_io=stac_api_io,
-        collections=[collection_id],
-        ids=[item_id],
-        modifier=pc.sign_inplace,
-    )
-    items = list(results.items())
-    if not items:
-        raise HTTPException(
-            404,
-            f"Could not find Item {item_id} in {collection_id} collection.",
-        )
-
-    return items[0]
-
-
-def ItemIdParams(
-    collection_id: Annotated[
-        str,
-        Path(description="STAC Collection Identifier"),
-    ],
-    item_id: Annotated[str, Path(description="STAC Item Identifier")],
-    api_params=Depends(STACApiParams),
-) -> pystac.Item:
-    """STAC Item dependency for the MultiBaseTilerFactory."""
-    return get_stac_item(
-        api_params["api_url"],
-        collection_id,
-        item_id,
-        headers=api_params.get("headers", {}),
-    )
-
-
 def STACSearchParams(
     request: Request,
     collection_id: Annotated[

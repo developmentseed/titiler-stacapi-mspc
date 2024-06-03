@@ -27,7 +27,7 @@ from rio_tiler.errors import (
     MissingAssets,
     TileOutsideBounds,
 )
-from rio_tiler.io import Reader, XarrayReader
+from rio_tiler.io import Reader
 from rio_tiler.io.base import BaseReader, MultiBaseReader
 from rio_tiler.models import ImageData
 from rio_tiler.mosaic import mosaic_reader
@@ -38,6 +38,7 @@ from urllib3 import Retry
 from titiler.stacapi.models import AssetInfo
 from titiler.stacapi.settings import CacheSettings, RetrySettings, STACSettings
 from titiler.stacapi.utils import Timer
+from titiler.stacapi.xarray import XarrayReader
 
 cache_config = CacheSettings()
 retry_config = RetrySettings()
@@ -222,6 +223,8 @@ class CustomSTACReader(MultiBaseReader):
                 with reader(
                     asset_info["url"], tms=self.tms, **self.reader_options
                 ) as src:
+                    if type(src) == XarrayReader:
+                        raise NotImplementedError("XarrayReader not yet implemented")
                     data = src.tile(*args, indexes=idx, **kwargs)
 
                     self._update_statistics(
