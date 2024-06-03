@@ -195,7 +195,6 @@ class StacItemTiler(BaseTilerFactory):
             color_formula=Depends(dependencies.ColorFormulaParams),
             colormap=Depends(dependencies.ColorMapParams),
             render_params=Depends(dependencies.ImageRenderingParams),
-            input=Depends(self.path_dependency),
             item=Depends(self.path_dependency),
         ) -> Response:
             """Create map tile from a dataset."""
