@@ -9,15 +9,17 @@ from morecantile import TileMatrixSet
 from rasterio.crs import CRS
 from rio_tiler.constants import WEB_MERCATOR_TMS, WGS84_CRS
 from rio_tiler.errors import InvalidAssetName, RioTilerError
-from rio_tiler.io import BaseReader, Reader, stac, XarrayReader
+from rio_tiler.io import BaseReader, Reader, XarrayReader, stac
 from rio_tiler.types import AssetInfo
 
 from titiler.stacapi.settings import STACSettings
 
 stac_config = STACSettings()
 
+
 class InvalidAssetType(RioTilerError):
     """Invalid Asset name."""
+
 
 valid_types = {
     "image/tiff; application=geotiff",
@@ -34,6 +36,7 @@ valid_types = {
     "application/netcdf",
 }
 
+
 @attr.s
 class STACReader(stac.STACReader):
     """Custom STAC Reader.
@@ -43,7 +46,9 @@ class STACReader(stac.STACReader):
     """
 
     item: pystac.Item = attr.ib()
-    input: str = attr.ib(default=None) # we don't need an input requirement here, as it is required by the default rio_tiler.io.STACReader
+    input: str = attr.ib(
+        default=None
+    )  # we don't need an input requirement here, as it is required by the default rio_tiler.io.STACReader
 
     tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
     minzoom: int = attr.ib()
@@ -71,7 +76,7 @@ class STACReader(stac.STACReader):
     @maxzoom.default
     def _maxzoom(self):
         return self.tms.maxzoom
-    
+
     def asset_media_types_set(self, *asset_names):
         """
         Given a STAC item and multiple asset names, returns the set of asset media types for those assets.
@@ -85,12 +90,12 @@ class STACReader(stac.STACReader):
         media_types = set()
         assets = self.item.assets
 
-        for asset_name in asset_names: 
-            # TODO: Should we catch and raise if asset name or type are missing?          
+        for asset_name in asset_names:
+            # TODO: Should we catch and raise if asset name or type are missing?
             asset = assets.get(asset_name)
-            media_type = asset.get('type')
+            media_type = asset.get("type")
             if media_type:
-                # stac.STACReader all ready filters to valid types, so we don't need to do that here            
+                # stac.STACReader all ready filters to valid types, so we don't need to do that here
                 media_types.add(media_type)
         return media_types
 
@@ -131,11 +136,7 @@ class STACReader(stac.STACReader):
         if alternate := stac_config.alternate_url:
             url = asset_info.to_dict()["alternate"][alternate]["href"]
 
-        info = AssetInfo(
-            url=url,
-            metadata=extras,
-            type=asset_info.to_dict()["type"]
-        )
+        info = AssetInfo(url=url, metadata=extras, type=asset_info.to_dict()["type"])
 
         if head := extras.get("file:header_size"):
             info["env"] = {"GDAL_INGESTED_BYTES_AT_OPEN": head}
