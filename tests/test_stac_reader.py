@@ -40,7 +40,7 @@ def gen_stac_item(media_types: list = None):
         media_types = []
     assets = {}
     for i, media_type in enumerate(media_types):
-        assets[f"asset_{i}"] = pystac.Asset(href=f"asset_{i}", media_type=media_type)
+        assets[f"asset{i}"] = pystac.Asset(href=f"asset{i}", media_type=media_type)
     return pystac.Item(
         **{
             "geometry": None,
@@ -61,11 +61,24 @@ def test_bad_asset_media_types():
     _ = STACReader(stac_item)
 
 
-def test_good_asset_media_types():
+from titiler.stacapi.stac_reader import netcdf_types, cog_types
+from titiler.stacapi.stac_reader import InvalidAssetsSelection
+
+netcdf_types_list = list(netcdf_types)
+cog_types_list = list(cog_types)
+
+@pytest.mark.xfail(raises=InvalidAssetsSelection)
+def test_not_all_same_media_type():
     """Test with good asset media types."""
     # test with 2 different types
+    stac_item = gen_stac_item([netcdf_types_list[0], cog_types_list[0]])
+    STACReader(stac_item).all_same_media_type(['asset0', 'asset1'])
 
+def test_all_same_media_type():
     # test with multiple netcdfs
+    stac_item = gen_stac_item(netcdf_types_list)
+    assert STACReader(stac_item).all_same_media_type(['asset0', 'asset1']) == netcdf_types
 
-    # test with multiple COGs
-    pass
+    # test with multiple COGs and netcdf, not selected
+    stac_item = gen_stac_item([cog_types_list[0], cog_types_list[1], netcdf_types_list[0]])
+    assert STACReader(stac_item).all_same_media_type(['asset0', 'asset1']) == {cog_types_list[0], cog_types_list[1]}

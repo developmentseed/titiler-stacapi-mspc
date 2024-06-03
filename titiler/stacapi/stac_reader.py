@@ -20,21 +20,29 @@ stac_config = STACSettings()
 class InvalidAssetType(RioTilerError):
     """Invalid Asset name."""
 
+class InvalidAssetsSelection(RioTilerError):
+    """Invalid Asset selection."""
 
-valid_types = {
-    "image/tiff; application=geotiff",
+cog_types = {
     "image/tiff; application=geotiff; profile=cloud-optimized",
     "image/tiff; profile=cloud-optimized; application=geotiff",
     "image/vnd.stac.geotiff; cloud-optimized=true",
-    "image/tiff",
-    "image/x.geotiff",
-    "image/jp2",
-    "application/x-hdf5",
-    "application/x-hdf",
-    "application/vnd+zarr",
+}
+
+netcdf_types = {
     "application/x-netcdf",
     "application/netcdf",
 }
+
+valid_types = cog_types.union(netcdf_types).union({
+    "image/tiff",
+    "image/x.geotiff",
+    "image/tiff; application=geotiff",
+    "image/jp2",
+    "application/x-hdf5",
+    "application/x-hdf",
+    "application/vnd+zarr"
+})
 
 
 @attr.s
@@ -77,7 +85,7 @@ class STACReader(stac.STACReader):
     def _maxzoom(self):
         return self.tms.maxzoom
 
-    def asset_media_types_set(self, *asset_names):
+    def all_same_media_type(self, asset_names: list[str]) -> set[str]:
         """
         Given a STAC item and multiple asset names, returns the set of asset media types for those assets.
 
@@ -93,10 +101,15 @@ class STACReader(stac.STACReader):
         for asset_name in asset_names:
             # TODO: Should we catch and raise if asset name or type are missing?
             asset = assets.get(asset_name)
-            media_type = asset.get("type")
+            media_type = asset.media_type
             if media_type:
                 # stac.STACReader all ready filters to valid types, so we don't need to do that here
                 media_types.add(media_type)
+            if len(media_types) > 1:
+                if all(media_types in cog_types for media_types in media_types) or all(media_types in netcdf_types for media_types in media_types):
+                    return media_types
+                else:
+                    raise InvalidAssetsSelection("Cannot combine assets with different media types")           
         return media_types
 
     def _select_asset_reader(self, asset: str) -> Type[BaseReader]:
