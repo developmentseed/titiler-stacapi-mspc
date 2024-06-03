@@ -1,18 +1,10 @@
 """titiler-stacapi dependencies."""
 
-import json
 from typing import Dict, List, Literal, Optional, TypedDict, get_args
 
-import planetary_computer as pc
-import pystac
-from cachetools import TTLCache, cached
-from cachetools.keys import hashkey
-from fastapi import Depends, HTTPException, Path, Query
-from pystac_client import ItemSearch
-from pystac_client.stac_api_io import StacApiIO
+from fastapi import Path, Query
 from starlette.requests import Request
 from typing_extensions import Annotated
-from urllib3 import Retry
 
 from titiler.stacapi.enums import MediaType
 from titiler.stacapi.settings import CacheSettings, RetrySettings
@@ -101,6 +93,7 @@ def STACApiParams(
     return APIParams(
         api_url=request.app.state.stac_url,
     )
+
 
 def STACSearchParams(
     request: Request,

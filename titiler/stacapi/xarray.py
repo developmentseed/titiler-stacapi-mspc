@@ -1,9 +1,13 @@
+""" Custom Xarray Reader. """
 
 import attr
+
 # from typing import Dict
 import rio_tiler.io as riotio
+
 # import xarray as xr
 # import fsspec
+
 
 @attr.s
 class XarrayReader(riotio.XarrayReader):

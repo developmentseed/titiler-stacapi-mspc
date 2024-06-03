@@ -12,7 +12,7 @@ from starlette.templating import Jinja2Templates
 from typing_extensions import Annotated
 
 from titiler.core.errors import DEFAULT_STATUS_CODES, add_exception_handlers
-from titiler.core.factory import AlgorithmFactory, MultiBaseTilerFactory, TMSFactory
+from titiler.core.factory import AlgorithmFactory, TMSFactory
 from titiler.core.middleware import CacheControlMiddleware, LoggerMiddleware
 from titiler.core.resources.enums import OptionalHeader
 from titiler.mosaic.errors import MOSAIC_STATUS_CODES
