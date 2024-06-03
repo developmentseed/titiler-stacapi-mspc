@@ -20,8 +20,10 @@ stac_config = STACSettings()
 class InvalidAssetType(RioTilerError):
     """Invalid Asset name."""
 
+
 class InvalidAssetsSelection(RioTilerError):
     """Invalid Asset selection."""
+
 
 cog_types = {
     "image/tiff; application=geotiff; profile=cloud-optimized",
@@ -34,15 +36,17 @@ netcdf_types = {
     "application/netcdf",
 }
 
-valid_types = cog_types.union(netcdf_types).union({
-    "image/tiff",
-    "image/x.geotiff",
-    "image/tiff; application=geotiff",
-    "image/jp2",
-    "application/x-hdf5",
-    "application/x-hdf",
-    "application/vnd+zarr"
-})
+valid_types = cog_types.union(netcdf_types).union(
+    {
+        "image/tiff",
+        "image/x.geotiff",
+        "image/tiff; application=geotiff",
+        "image/jp2",
+        "application/x-hdf5",
+        "application/x-hdf",
+        "application/vnd+zarr",
+    }
+)
 
 
 @attr.s
@@ -106,10 +110,14 @@ class STACReader(stac.STACReader):
                 # stac.STACReader all ready filters to valid types, so we don't need to do that here
                 media_types.add(media_type)
             if len(media_types) > 1:
-                if all(media_types in cog_types for media_types in media_types) or all(media_types in netcdf_types for media_types in media_types):
+                if all(media_types in cog_types for media_types in media_types) or all(
+                    media_types in netcdf_types for media_types in media_types
+                ):
                     return media_types
                 else:
-                    raise InvalidAssetsSelection("Cannot combine assets with different media types")           
+                    raise InvalidAssetsSelection(
+                        "Cannot combine assets with different media types"
+                    )
         return media_types
 
     def _select_asset_reader(self, asset: str) -> Type[BaseReader]:

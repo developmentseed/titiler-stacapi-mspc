@@ -8,7 +8,12 @@ import pytest
 from rio_tiler.errors import MissingAssets
 from rio_tiler.io import Reader, XarrayReader
 
-from titiler.stacapi.stac_reader import STACReader
+from titiler.stacapi.stac_reader import (
+    InvalidAssetsSelection,
+    STACReader,
+    cog_types,
+    netcdf_types,
+)
 
 cog_item_json = os.path.join(
     os.path.dirname(__file__), "fixtures", "20200307aC0853900w361030.json"
@@ -61,24 +66,31 @@ def test_bad_asset_media_types():
     _ = STACReader(stac_item)
 
 
-from titiler.stacapi.stac_reader import netcdf_types, cog_types
-from titiler.stacapi.stac_reader import InvalidAssetsSelection
-
 netcdf_types_list = list(netcdf_types)
 cog_types_list = list(cog_types)
+
 
 @pytest.mark.xfail(raises=InvalidAssetsSelection)
 def test_not_all_same_media_type():
     """Test with good asset media types."""
     # test with 2 different types
     stac_item = gen_stac_item([netcdf_types_list[0], cog_types_list[0]])
-    STACReader(stac_item).all_same_media_type(['asset0', 'asset1'])
+    STACReader(stac_item).all_same_media_type(["asset0", "asset1"])
+
 
 def test_all_same_media_type():
+    """Test with good asset media types."""
     # test with multiple netcdfs
     stac_item = gen_stac_item(netcdf_types_list)
-    assert STACReader(stac_item).all_same_media_type(['asset0', 'asset1']) == netcdf_types
+    assert (
+        STACReader(stac_item).all_same_media_type(["asset0", "asset1"]) == netcdf_types
+    )
 
     # test with multiple COGs and netcdf, not selected
-    stac_item = gen_stac_item([cog_types_list[0], cog_types_list[1], netcdf_types_list[0]])
-    assert STACReader(stac_item).all_same_media_type(['asset0', 'asset1']) == {cog_types_list[0], cog_types_list[1]}
+    stac_item = gen_stac_item(
+        [cog_types_list[0], cog_types_list[1], netcdf_types_list[0]]
+    )
+    assert STACReader(stac_item).all_same_media_type(["asset0", "asset1"]) == {
+        cog_types_list[0],
+        cog_types_list[1],
+    }
