@@ -1,7 +1,8 @@
 """titiler-stacapi custom Mosaic Backend and Custom STACReader."""
 
 import json
-from typing import Any, Dict, List, Optional, Tuple, Type, Union, Sequence, Set
+import warnings
+from typing import Any, Dict, List, Optional, Sequence, Set, Tuple, Type, Union
 
 import attr
 import planetary_computer as pc
@@ -19,7 +20,13 @@ from pystac_client.stac_api_io import StacApiIO
 from rasterio.crs import CRS
 from rasterio.warp import transform, transform_bounds
 from rio_tiler.constants import WEB_MERCATOR_TMS, WGS84_CRS
-from rio_tiler.errors import InvalidAssetName, TileOutsideBounds, MissingAssets, AssetAsBandError, ExpressionMixingWarning
+from rio_tiler.errors import (
+    AssetAsBandError,
+    ExpressionMixingWarning,
+    InvalidAssetName,
+    MissingAssets,
+    TileOutsideBounds,
+)
 from rio_tiler.io import Reader, XarrayReader
 from rio_tiler.io.base import BaseReader, MultiBaseReader
 from rio_tiler.models import ImageData
@@ -27,10 +34,8 @@ from rio_tiler.mosaic import mosaic_reader
 from rio_tiler.tasks import multi_arrays
 from rio_tiler.types import BBox, Indexes
 from urllib3 import Retry
-import warnings
 
 from titiler.stacapi.models import AssetInfo
-
 from titiler.stacapi.settings import CacheSettings, RetrySettings, STACSettings
 from titiler.stacapi.utils import Timer
 
@@ -51,6 +56,7 @@ valid_types = {
     "application/vnd+zarr",
     "application/x-netcdf",
 }
+
 
 @attr.s
 class CustomSTACReader(MultiBaseReader):
@@ -105,8 +111,7 @@ class CustomSTACReader(MultiBaseReader):
             "application/x-hdf",
             "application/vnd.zarr",
             "application/x-netcdf",
-            "application/netcdf"
-
+            "application/netcdf",
         ]:
             return XarrayReader
 
@@ -137,10 +142,10 @@ class CustomSTACReader(MultiBaseReader):
         info = AssetInfo(url=url, env={})
 
         if asset_info.get("type"):
-            info.media_type = asset_info["type"]
+            info["type"] = asset_info["type"]
 
         if header_size := asset_info.get("file:header_size"):
-            info["env"]["GDAL_INGESTED_BYTES_AT_OPEN"] = header_size
+            info["env"]["GDAL_INGESTED_BYTES_AT_OPEN"] = header_size  # type: ignore
 
         if bands := asset_info.get("raster:bands"):
             stats = [
@@ -153,12 +158,12 @@ class CustomSTACReader(MultiBaseReader):
 
         return info
 
-    def tile(
+    def tile(  # noqa: C901
         self,
         tile_x: int,
         tile_y: int,
         tile_z: int,
-        assets: Union[Sequence[str], str] = None,
+        assets: Union[Sequence[str], str] = (),
         expression: Optional[str] = None,
         asset_indexes: Optional[Dict[str, Indexes]] = None,  # Indexes for each asset
         asset_as_band: bool = False,
@@ -191,6 +196,7 @@ class CustomSTACReader(MultiBaseReader):
             warnings.warn(
                 "Both expression and assets passed; expression will overwrite assets parameter.",
                 ExpressionMixingWarning,
+                stacklevel=2,
             )
 
         if expression:
@@ -245,6 +251,7 @@ class CustomSTACReader(MultiBaseReader):
             return img.apply_expression(expression)
 
         return img
+
 
 @attr.s
 class STACAPIBackend(BaseBackend):
