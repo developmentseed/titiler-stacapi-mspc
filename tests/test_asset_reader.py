@@ -23,11 +23,11 @@ def test_get_asset_info():
     """Test get_asset_info function"""
     asset_reader = AssetReader(item_json)
     expected_asset_info = AssetInfo(
-        url=item_json['assets']['cog']['href'],
-        type=item_json['assets']['cog']['type'],
-        env={}
+        url=item_json["assets"]["cog"]["href"],
+        type=item_json["assets"]["cog"]["type"],
+        env={},
     )
-    assert asset_reader._get_asset_info('cog') == expected_asset_info
+    assert asset_reader._get_asset_info("cog") == expected_asset_info
 
 
 def test_get_reader_any():
