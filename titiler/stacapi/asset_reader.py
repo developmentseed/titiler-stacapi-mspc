@@ -18,7 +18,6 @@ from rio_tiler.io import Reader
 from rio_tiler.io.base import BaseReader, MultiBaseReader
 from rio_tiler.models import ImageData
 from rio_tiler.tasks import multi_arrays
-from rio_tiler.types import Indexes
 
 from titiler.stacapi.models import AssetInfo
 from titiler.stacapi.settings import CacheSettings, RetrySettings, STACSettings
@@ -68,8 +67,11 @@ class AssetReader(MultiBaseReader):
     @maxzoom.default
     def _maxzoom(self):
         return self.tms.maxzoom
-    
+
     def __attrs_post_init__(self):
+        """
+        Post Init.
+        """
         # MultibaseReader includes the spatial mixin so these attributes are required to assert that the tile exists inside the bounds of the item
         self.crs = WGS84_CRS  # Per specification STAC items are in WGS84
         self.bounds = self.input["bbox"]
@@ -86,7 +88,7 @@ class AssetReader(MultiBaseReader):
             "application/x-netcdf",
             "application/netcdf",
         ]:
-          raise NotImplementedError("XarrayReader not yet implemented")
+            raise NotImplementedError("XarrayReader not yet implemented")
 
         return Reader
 

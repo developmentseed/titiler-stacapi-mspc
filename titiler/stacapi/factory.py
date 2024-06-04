@@ -6,7 +6,6 @@ from typing import Any, Callable, Dict, Literal, Optional, Type
 from urllib.parse import urlencode
 
 import jinja2
-import rasterio
 from cogeo_mosaic.backends import BaseBackend
 from fastapi import Depends, HTTPException, Path, Query
 from fastapi.dependencies.utils import get_dependant, request_params_to_args
@@ -202,9 +201,7 @@ class MosaicTilerFactory(BaseTilerFactory):
                 reader_options={**reader_params},
                 **backend_params,
             ) as src_dst:
-                if MOSAIC_STRICT_ZOOM and (
-                    z < src_dst.minzoom or z > src_dst.maxzoom
-                ):
+                if MOSAIC_STRICT_ZOOM and (z < src_dst.minzoom or z > src_dst.maxzoom):
                     raise HTTPException(
                         400,
                         f"Invalid ZOOM level {z}. Should be between {src_dst.minzoom} and {src_dst.maxzoom}",

@@ -5,7 +5,6 @@ import os
 import pytest
 import rasterio
 from fastapi.testclient import TestClient
-from rio_tiler.models import ImageData
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "fixtures")
 
@@ -30,5 +29,7 @@ def mock_rasterio_open(asset):
         "https://noaa-eri-pds.s3.us-east-1.amazonaws.com/2020_Nashville_Tornado/20200307a_RGB",
         DATA_DIR,
     )
-    import pdb; pdb.set_trace()
+    import pdb
+
+    pdb.set_trace()
     return rasterio.open(asset)

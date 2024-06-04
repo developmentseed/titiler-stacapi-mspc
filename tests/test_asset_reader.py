@@ -28,7 +28,7 @@ def test_asset_info():
 def test_get_reader_any():
     """Test reader is rio_tiler.io.Reader"""
     asset_info = AssetInfo(url="https://file.tif")
-    empty_stac_reader = AssetReader({'bbox': [], 'assets': []})
+    empty_stac_reader = AssetReader({"bbox": [], "assets": []})
     assert empty_stac_reader._get_reader(asset_info) == Reader
 
 
@@ -36,8 +36,9 @@ def test_get_reader_any():
 def test_get_reader_netcdf():
     """Test reader attribute is titiler.stacapi.XarrayReader"""
     asset_info = AssetInfo(url="https://file.nc", type="application/netcdf")
-    empty_stac_reader = AssetReader({'bbox': [], 'assets': []})
+    empty_stac_reader = AssetReader({"bbox": [], "assets": []})
     empty_stac_reader._get_reader(asset_info)
+
 
 @pytest.mark.skip(reason="Too slow.")
 @patch("rio_tiler.io.rasterio.rasterio")
@@ -48,6 +49,7 @@ def test_tile_cog(rio):
     with AssetReader(item_json) as reader:
         img = reader.tile(0, 0, 0, assets=["cog"])
         assert isinstance(img, ImageData)
+
 
 @pytest.mark.skip(reason="To be implemented.")
 def test_tile_netcdf():
