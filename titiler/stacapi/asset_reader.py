@@ -6,7 +6,7 @@ from typing import Any, Dict, Optional, Sequence, Set, Type, Union
 import attr
 import rasterio
 from morecantile import TileMatrixSet
-from rio_tiler.constants import WEB_MERCATOR_TMS
+from rio_tiler.constants import WEB_MERCATOR_TMS, WGS84_CRS
 from rio_tiler.errors import (
     AssetAsBandError,
     ExpressionMixingWarning,
@@ -22,7 +22,6 @@ from rio_tiler.types import Indexes
 
 from titiler.stacapi.models import AssetInfo
 from titiler.stacapi.settings import CacheSettings, RetrySettings, STACSettings
-from titiler.stacapi.xarray import XarrayReader
 
 cache_config = CacheSettings()
 retry_config = RetrySettings()
@@ -49,6 +48,7 @@ class AssetReader(MultiBaseReader):
     Asset reader for STAC items.
     """
 
+    # bounds and assets are required
     input: Any = attr.ib()
     tms: TileMatrixSet = attr.ib(default=WEB_MERCATOR_TMS)
     minzoom: int = attr.ib()
@@ -68,6 +68,12 @@ class AssetReader(MultiBaseReader):
     @maxzoom.default
     def _maxzoom(self):
         return self.tms.maxzoom
+    
+    def __attrs_post_init__(self):
+        # MultibaseReader includes the spatial mixin so these attributes are required to assert that the tile exists inside the bounds of the item
+        self.crs = WGS84_CRS  # Per specification STAC items are in WGS84
+        self.bounds = self.input["bbox"]
+        self.assets = list(self.input["assets"])
 
     def _get_reader(self, asset_info: AssetInfo) -> Type[BaseReader]:
         """Get Asset Reader."""
@@ -80,7 +86,7 @@ class AssetReader(MultiBaseReader):
             "application/x-netcdf",
             "application/netcdf",
         ]:
-            return XarrayReader
+          raise NotImplementedError("XarrayReader not yet implemented")
 
         return Reader
 
@@ -111,6 +117,8 @@ class AssetReader(MultiBaseReader):
         if asset_info.get("type"):
             info["type"] = asset_info["type"]
 
+        # there is a file STAC extension for which `header_size` is the size of the header in the file
+        # if this value is present, we want to use the GDAL_INGESTED_BYTES_AT_OPEN env variable to read that many bytes at file open.
         if header_size := asset_info.get("file:header_size"):
             info["env"]["GDAL_INGESTED_BYTES_AT_OPEN"] = header_size  # type: ignore
 
@@ -132,7 +140,6 @@ class AssetReader(MultiBaseReader):
         tile_z: int,
         assets: Union[Sequence[str], str] = (),
         expression: Optional[str] = None,
-        asset_indexes: Optional[Dict[str, Indexes]] = None,  # Indexes for each asset
         asset_as_band: bool = False,
         **kwargs: Any,
     ) -> ImageData:
@@ -144,7 +151,6 @@ class AssetReader(MultiBaseReader):
             tile_z (int): Tile's zoom level index.
             assets (sequence of str or str, optional): assets to fetch info from.
             expression (str, optional): rio-tiler expression for the asset list (e.g. asset1/asset2+asset3).
-            asset_indexes (dict, optional): Band indexes for each asset (e.g {"asset1": 1, "asset2": (1, 2,)}).
             kwargs (optional): Options to forward to the `self.reader.tile` method.
 
         Returns:
@@ -174,13 +180,7 @@ class AssetReader(MultiBaseReader):
                 "assets must be passed either via `expression` or `assets` options."
             )
 
-        asset_indexes = asset_indexes or {}
-
-        # We fall back to `indexes` if provided
-        indexes = kwargs.pop("indexes", None)
-
         def _reader(asset: str, *args: Any, **kwargs: Any) -> ImageData:
-            idx = asset_indexes.get(asset) or indexes  # type: ignore
 
             asset_info = self._get_asset_info(asset)
             reader = self._get_reader(asset_info)
@@ -189,20 +189,7 @@ class AssetReader(MultiBaseReader):
                 with reader(
                     asset_info["url"], tms=self.tms, **self.reader_options
                 ) as src:
-                    if type(src) == XarrayReader:
-                        raise NotImplementedError("XarrayReader not yet implemented")
-                    data = src.tile(*args, indexes=idx, **kwargs)
-
-                    self._update_statistics(
-                        data,
-                        indexes=idx,
-                        statistics=asset_info.get("dataset_statistics"),
-                    )
-
-                    metadata = data.metadata or {}
-                    if m := asset_info.get("metadata"):
-                        metadata.update(m)
-                    data.metadata = {asset: metadata}
+                    data = src.tile(*args, **kwargs)
 
                     if asset_as_band:
                         if len(data.band_names) > 1:

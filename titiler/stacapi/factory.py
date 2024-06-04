@@ -195,34 +195,33 @@ class MosaicTilerFactory(BaseTilerFactory):
             scale = scale or 1
 
             tms = self.supported_tms.get(tileMatrixSetId)
-            with rasterio.Env(**env):
-                with self.reader(
-                    url=api_params["api_url"],
-                    headers=api_params.get("headers", {}),
-                    tms=tms,
-                    reader_options={**reader_params},
-                    **backend_params,
-                ) as src_dst:
-                    if MOSAIC_STRICT_ZOOM and (
-                        z < src_dst.minzoom or z > src_dst.maxzoom
-                    ):
-                        raise HTTPException(
-                            400,
-                            f"Invalid ZOOM level {z}. Should be between {src_dst.minzoom} and {src_dst.maxzoom}",
-                        )
-
-                    image, assets = src_dst.tile(
-                        x,
-                        y,
-                        z,
-                        search_query=search_query,
-                        tilesize=scale * 256,
-                        pixel_selection=pixel_selection,
-                        threads=MOSAIC_THREADS,
-                        **tile_params,
-                        **layer_params,
-                        **dataset_params,
+            with self.reader(
+                url=api_params["api_url"],
+                headers=api_params.get("headers", {}),
+                tms=tms,
+                reader_options={**reader_params},
+                **backend_params,
+            ) as src_dst:
+                if MOSAIC_STRICT_ZOOM and (
+                    z < src_dst.minzoom or z > src_dst.maxzoom
+                ):
+                    raise HTTPException(
+                        400,
+                        f"Invalid ZOOM level {z}. Should be between {src_dst.minzoom} and {src_dst.maxzoom}",
                     )
+
+                image, assets = src_dst.tile(
+                    x,
+                    y,
+                    z,
+                    search_query=search_query,
+                    tilesize=scale * 256,
+                    pixel_selection=pixel_selection,
+                    threads=MOSAIC_THREADS,
+                    **tile_params,
+                    **layer_params,
+                    **dataset_params,
+                )
 
             if post_process:
                 image = post_process(image)
