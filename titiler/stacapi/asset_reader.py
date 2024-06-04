@@ -181,7 +181,6 @@ class AssetReader(MultiBaseReader):
             )
 
         def _reader(asset: str, *args: Any, **kwargs: Any) -> ImageData:
-
             asset_info = self._get_asset_info(asset)
             reader = self._get_reader(asset_info)
 
