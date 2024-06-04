@@ -21,10 +21,8 @@ from rio_tiler.tasks import multi_arrays
 from rio_tiler.types import Indexes
 
 from titiler.stacapi.models import AssetInfo
-from titiler.stacapi.settings import CacheSettings, RetrySettings, STACSettings
+from titiler.stacapi.settings import STACSettings
 
-cache_config = CacheSettings()
-retry_config = RetrySettings()
 stac_config = STACSettings()
 
 valid_types = {
