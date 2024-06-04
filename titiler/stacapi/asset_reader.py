@@ -142,6 +142,7 @@ class AssetReader(MultiBaseReader):
         tile_z: int,
         assets: Union[Sequence[str], str] = (),
         expression: Optional[str] = None,
+        asset_indexes: Optional[Dict[str, Indexes]] = None,  # Indexes for each asset
         asset_as_band: bool = False,
         **kwargs: Any,
     ) -> ImageData:
@@ -153,6 +154,7 @@ class AssetReader(MultiBaseReader):
             tile_z (int): Tile's zoom level index.
             assets (sequence of str or str, optional): assets to fetch info from.
             expression (str, optional): rio-tiler expression for the asset list (e.g. asset1/asset2+asset3).
+            asset_indexes (dict, optional): Band indexes for each asset (e.g {"asset1": 1, "asset2": (1, 2,)}).
             kwargs (optional): Options to forward to the `self.reader.tile` method.
 
         Returns:
@@ -181,8 +183,16 @@ class AssetReader(MultiBaseReader):
             raise MissingAssets(
                 "assets must be passed either via `expression` or `assets` options."
             )
+        
+        # indexes comes from the bidx query-parameter.
+        # but for asset based backend we usually use asset_bidx option.
+        asset_indexes = asset_indexes or {}
+
+        # We fall back to `indexes` if provided
+        indexes = kwargs.pop("indexes", None)
 
         def _reader(asset: str, *args: Any, **kwargs: Any) -> ImageData:
+            idx = asset_indexes.get(asset) or indexes  # type: ignore
             asset_info = self._get_asset_info(asset)
             reader = self._get_reader(asset_info)
 
@@ -190,7 +200,7 @@ class AssetReader(MultiBaseReader):
                 with reader(
                     asset_info["url"], tms=self.tms, **self.reader_options
                 ) as src:
-                    data = src.tile(*args, **kwargs)
+                    data = src.tile(*args, indexes=idx, **kwargs)
 
                     if asset_as_band:
                         if len(data.band_names) > 1:
