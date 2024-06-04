@@ -18,6 +18,7 @@ from rio_tiler.io import Reader
 from rio_tiler.io.base import BaseReader, MultiBaseReader
 from rio_tiler.models import ImageData
 from rio_tiler.tasks import multi_arrays
+from rio_tiler.types import Indexes
 
 from titiler.stacapi.models import AssetInfo
 from titiler.stacapi.settings import CacheSettings, RetrySettings, STACSettings
@@ -183,7 +184,7 @@ class AssetReader(MultiBaseReader):
             raise MissingAssets(
                 "assets must be passed either via `expression` or `assets` options."
             )
-        
+
         # indexes comes from the bidx query-parameter.
         # but for asset based backend we usually use asset_bidx option.
         asset_indexes = asset_indexes or {}
