@@ -6,7 +6,7 @@ see: https://github.com/developmentseed/ogcapi-pydantic
 
 """
 
-from typing import List, Optional
+from typing import Dict, List, Optional, Sequence, Tuple, TypedDict
 
 from pydantic import BaseModel, Field
 from typing_extensions import Annotated
@@ -82,3 +82,13 @@ class Landing(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     links: List[Link]
+
+
+class AssetInfo(TypedDict, total=False):
+    """Asset Reader Options."""
+
+    url: str
+    env: Optional[Dict]
+    type: str
+    metadata: Optional[Dict]
+    dataset_statistics: Optional[Sequence[Tuple[float, float]]]

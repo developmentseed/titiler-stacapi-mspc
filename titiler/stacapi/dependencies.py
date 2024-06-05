@@ -1,18 +1,10 @@
 """titiler-stacapi dependencies."""
 
-import json
 from typing import Dict, List, Literal, Optional, TypedDict, get_args
 
-import planetary_computer as pc
-import pystac
-from cachetools import TTLCache, cached
-from cachetools.keys import hashkey
-from fastapi import Depends, HTTPException, Path, Query
-from pystac_client import ItemSearch
-from pystac_client.stac_api_io import StacApiIO
+from fastapi import Path, Query
 from starlette.requests import Request
 from typing_extensions import Annotated
-from urllib3 import Retry
 
 from titiler.stacapi.enums import MediaType
 from titiler.stacapi.settings import CacheSettings, RetrySettings
@@ -100,60 +92,6 @@ def STACApiParams(
     """Return STAC API Parameters."""
     return APIParams(
         api_url=request.app.state.stac_url,
-    )
-
-
-@cached(  # type: ignore
-    TTLCache(maxsize=cache_config.maxsize, ttl=cache_config.ttl),
-    key=lambda url, collection_id, item_id, headers, **kwargs: hashkey(
-        url, collection_id, item_id, json.dumps(headers)
-    ),
-)
-def get_stac_item(
-    url: str,
-    collection_id: str,
-    item_id: str,
-    headers: Optional[Dict] = None,
-) -> pystac.Item:
-    """Get STAC Item from STAC API."""
-    stac_api_io = StacApiIO(
-        max_retries=Retry(
-            total=retry_config.retry,
-            backoff_factor=retry_config.retry_factor,
-        ),
-        headers=headers,
-    )
-    results = ItemSearch(
-        f"{url}/search",
-        stac_io=stac_api_io,
-        collections=[collection_id],
-        ids=[item_id],
-        modifier=pc.sign_inplace,
-    )
-    items = list(results.items())
-    if not items:
-        raise HTTPException(
-            404,
-            f"Could not find Item {item_id} in {collection_id} collection.",
-        )
-
-    return items[0]
-
-
-def ItemIdParams(
-    collection_id: Annotated[
-        str,
-        Path(description="STAC Collection Identifier"),
-    ],
-    item_id: Annotated[str, Path(description="STAC Item Identifier")],
-    api_params=Depends(STACApiParams),
-) -> pystac.Item:
-    """STAC Item dependency for the MultiBaseTilerFactory."""
-    return get_stac_item(
-        api_params["api_url"],
-        collection_id,
-        item_id,
-        headers=api_params.get("headers", {}),
     )
 
 

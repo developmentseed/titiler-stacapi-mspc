@@ -12,17 +12,16 @@ from starlette.templating import Jinja2Templates
 from typing_extensions import Annotated
 
 from titiler.core.errors import DEFAULT_STATUS_CODES, add_exception_handlers
-from titiler.core.factory import AlgorithmFactory, MultiBaseTilerFactory, TMSFactory
+from titiler.core.factory import AlgorithmFactory, TMSFactory
 from titiler.core.middleware import CacheControlMiddleware, LoggerMiddleware
 from titiler.core.resources.enums import OptionalHeader
 from titiler.mosaic.errors import MOSAIC_STATUS_CODES
 from titiler.stacapi import __version__ as titiler_stacapi_version
 from titiler.stacapi import models
-from titiler.stacapi.dependencies import ItemIdParams, OutputType, STACApiParams
+from titiler.stacapi.dependencies import OutputType, STACApiParams
 from titiler.stacapi.enums import MediaType
 from titiler.stacapi.factory import MosaicTilerFactory
 from titiler.stacapi.settings import ApiSettings, STACAPISettings
-from titiler.stacapi.stac_reader import STACReader
 from titiler.stacapi.utils import create_html_response
 
 settings = ApiSettings()
@@ -97,25 +96,6 @@ collection = MosaicTilerFactory(
 )
 app.include_router(
     collection.router, tags=["STAC Collection"], prefix="/collections/{collection_id}"
-)
-
-###############################################################################
-# STAC Item Endpoints
-# Notes: The `MultiBaseTilerFactory` from titiler.core.factory expect a `URL` as query parameter
-# but in this project we use a custom `path_dependency=ItemIdParams`, which define `{collection_id}` and `{item_id}` as
-# `Path` dependencies. Then the `ItemIdParams` dependency will fetch the STAC API endpoint to get the STAC Item. The Item
-# will then be used in our custom `STACReader`.
-stac = MultiBaseTilerFactory(
-    reader=STACReader,
-    path_dependency=ItemIdParams,
-    optional_headers=optional_headers,
-    router_prefix="/collections/{collection_id}/items/{item_id}",
-    add_viewer=True,
-)
-app.include_router(
-    stac.router,
-    tags=["STAC Item"],
-    prefix="/collections/{collection_id}/items/{item_id}",
 )
 
 ###############################################################################
