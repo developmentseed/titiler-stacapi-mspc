@@ -199,7 +199,9 @@ class AssetsReader(MultiBaseReader):
                 with reader(
                     asset_info["url"], tms=self.tms, **self.reader_options
                 ) as src:
-                    data = src.tile(*args, indexes=idx, **kwargs)
+                    if idx is not None:
+                        kwargs.update({"indexes": idx})
+                    data = src.tile(*args, **kwargs)
 
                     if asset_as_band:
                         if len(data.band_names) > 1:
