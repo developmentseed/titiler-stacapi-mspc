@@ -41,7 +41,7 @@ valid_types = {
 
 
 @attr.s
-class AssetReader(MultiBaseReader):
+class AssetsReader(MultiBaseReader):
     """
     Asset reader for STAC items.
     """

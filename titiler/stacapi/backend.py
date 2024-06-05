@@ -23,7 +23,7 @@ from rio_tiler.mosaic import mosaic_reader
 from rio_tiler.types import BBox
 from urllib3 import Retry
 
-from titiler.stacapi.asset_reader import AssetReader
+from titiler.stacapi.assets_reader import AssetsReader
 from titiler.stacapi.settings import CacheSettings, RetrySettings, STACSettings
 from titiler.stacapi.utils import Timer
 
@@ -46,7 +46,7 @@ class STACAPIBackend(BaseBackend):
     maxzoom: int = attr.ib()
 
     # Use custom asset reader (outside init)
-    reader: Type[AssetReader] = attr.ib(init=False, default=AssetReader)
+    reader: Type[AssetsReader] = attr.ib(init=False, default=AssetsReader)
     reader_options: Dict = attr.ib(factory=dict)
 
     # default values for bounds
